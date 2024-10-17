@@ -1,6 +1,6 @@
 # Dividimos Cuentas
 
-Aplicación para dividir cuentas entre amigos.
+Aplicación web para dividir cuentas entre amigos.
 
 ## Tecnologías
 
