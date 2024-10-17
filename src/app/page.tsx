@@ -1,95 +1,101 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import { Box, Heading, Stack, useBreakpointValue } from '@chakra-ui/react';
+import { useState } from 'react';
+import Home from './Home';
+import { Event } from './types';
+import AddAuthor from './AddAuthor';
+import ShowEvent from './ShowEvent';
+import { IoMdArrowBack } from 'react-icons/io';
+import { v4 as uuidv4 } from 'uuid';
 
-export default function Home() {
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState<'create' | 'owner' | 'show'>('create');
+  const [event, setEvent] = useState<Event>({
+    id: uuidv4(),
+    name: '',
+    description: '',
+    date: new Date(),
+    createdBy: null,
+    items: [],
+    people: [],
+    debts: [],
+  });
+
+  const setEventInfo = (name: string, description: string, date: Date) => {
+    setEvent({ ...event, name, description, date });
+    setCurrentScreen('owner');
+  };
+
+  const setEventOwner = (name: string, email: string, cvu: string) => {
+    setEvent({
+      ...event,
+      createdBy: { id: uuidv4(), name, email, cvu },
+    });
+    setCurrentScreen('show');
+  };
+
+  const renderEventScreen = () => {
+    if (currentScreen === 'create') {
+      return <Home onEventCreated={setEventInfo} />;
+    }
+    if (currentScreen === 'owner') {
+      return <AddAuthor onOwnerSet={setEventOwner} />;
+    }
+    if (currentScreen === 'show') {
+      return <ShowEvent event={event} setEvent={setEvent} />;
+    }
+  };
+
+  const goHome = () => {
+    setCurrentScreen('create');
+    setEvent({
+      id: uuidv4(),
+      name: '',
+      description: '',
+      date: new Date(),
+      createdBy: null,
+      items: [],
+      people: [],
+      debts: [],
+    });
+  };
+
+  const showBackButton =
+    useBreakpointValue({ base: true, md: false }) && currentScreen !== 'create';
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <Box backgroundColor={'blackAlpha.900'} minHeight={'100vh'} p={4}>
+      <Stack color={'white'} width={{ base: '100%', md: '33.33%' }} mx={'auto'}>
+        <Box>
+          <Box>
+            {showBackButton && (
+              <Box pb={4} onClick={goHome} cursor={'pointer'} w={'fit-content'}>
+                <IoMdArrowBack size={24} />
+              </Box>
+            )}
+            <Heading
+              as={'h1'}
+              pt={2}
+              pb={2}
+              ps={0}
+              mb={4}
+              size={'lg'}
+              borderBottom={'1px solid'}
+              borderColor={'whiteAlpha.300'}
+              onClick={goHome}
+              cursor={'pointer'}
+            >
+              Dividimos Cuentas
+            </Heading>
+            {currentScreen === 'create' && (
+              <Heading as={'h2'} p={1} ps={0} size={'sm'} pb={8} color={'whiteAlpha.700'}>
+                Divide tus cuentas con tus amigos de forma sencilla
+              </Heading>
+            )}
+          </Box>
+          <Box w={'full'}>{renderEventScreen()}</Box>
+        </Box>
+      </Stack>
+    </Box>
   );
 }
