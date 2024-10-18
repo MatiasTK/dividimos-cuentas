@@ -33,7 +33,7 @@ import { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ParticipantModal from './ParticipantModal';
 import { IoIosMail } from 'react-icons/io';
-import ItemModal from './ItemModal';
+import ItemModal from './components/ItemModal/ItemModal';
 
 type props = {
   event: Event;
@@ -43,6 +43,8 @@ type props = {
 export default function ShowEvent({ event, setEvent }: props) {
   const [bills, setBills] = useState<Debt[]>([]);
   const [paidBills, setPaidBills] = useState<Debt[]>([]);
+
+  // TODO: Recalculate debts on item edit/remove
 
   const itemToDelete = useRef<Item | null>(null);
   const itemToEdit = useRef<Item>({
@@ -554,7 +556,7 @@ export default function ShowEvent({ event, setEvent }: props) {
         creator={event.createdBy!}
         people={event.people}
         addItem={addItem}
-        editingItem={itemToEdit.current.id !== ''}
+        isEdit={itemToEdit.current.id !== ''}
         editItemInfo={itemToEdit.current}
         editItem={editItem}
       />
