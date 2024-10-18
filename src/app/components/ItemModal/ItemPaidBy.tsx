@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { FaChevronDown, FaTrash } from 'react-icons/fa';
 import { useEffect, useMemo, useState } from 'react';
+import { CREATOR_OFFSET } from '@/app/constants';
 
 type props = {
   payers: Payer[];
@@ -63,7 +64,7 @@ export default function ItemPaidBy({ payers, creator, people, setPayers }: props
       <Stack flexDir={'row'} alignItems={'center'} justifyContent={'space-between'}>
         <Text mb={2}>Pagado por</Text>
         <Menu>
-          {currentPayers.length !== people.length + 1 && (
+          {currentPayers.length !== people.length + CREATOR_OFFSET && (
             <MenuButton
               as={Button}
               colorScheme="blackAlpha"

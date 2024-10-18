@@ -75,11 +75,27 @@ export default function ShowEvent({ event, setEvent }: props) {
   } = useDisclosure();
 
   const handleDeleteItem = (item: Item) => {
+    const newItems = event.items.filter((i) => i.id !== item.id);
     setEvent({
       ...event,
-      items: event.items.filter((i) => i.id !== item.id),
+      items: newItems,
     });
+    calculateBills(newItems);
     onDeleteDialogClose();
+  };
+
+  const handleEditItem = () => {
+    {
+      itemToEdit.current = {
+        id: '',
+        description: '',
+        price: 0,
+        paidBy: [],
+        sharedBetween: [],
+      };
+      calculateBills(event.items);
+      onItemModalClose();
+    }
   };
 
   const addParticipant = (participant: { name: string; email: string; cvu: string }) => {
@@ -314,10 +330,6 @@ export default function ShowEvent({ event, setEvent }: props) {
             </Text>
           </Button>
         </Stack>
-        <Button size={'xs'} onClick={() => calculateBills(event.items)}>
-          Update Bills (DEV)
-        </Button>
-
         <Stack my={8}>
           {event.items.length === 0 && (
             <Text color={'whiteAlpha.400'} fontSize={'sm'}>
@@ -543,16 +555,7 @@ export default function ShowEvent({ event, setEvent }: props) {
 
       <ItemModal
         isOpen={isItemModalOpen}
-        onClose={() => {
-          itemToEdit.current = {
-            id: '',
-            description: '',
-            price: 0,
-            paidBy: [],
-            sharedBetween: [],
-          };
-          onItemModalClose();
-        }}
+        onClose={handleEditItem}
         creator={event.createdBy!}
         people={event.people}
         addItem={addItem}

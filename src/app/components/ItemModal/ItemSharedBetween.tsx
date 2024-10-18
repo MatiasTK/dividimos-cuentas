@@ -158,7 +158,9 @@ export default function ItemSharedBetween({ members, price, setSharedMembers, to
           <FaQuestionCircle />
         </Button>
       </Stack>
-      <CheckboxGroup defaultValue={itemSharedBetween.map((member) => member.person.id)}>
+      <CheckboxGroup
+        defaultValue={itemSharedBetween.filter((m) => m.isIncluded).map((m) => m.person.id)}
+      >
         {itemSharedBetween.map((member) => (
           <Box key={member.person.id} mb={2}>
             <Stack
@@ -171,7 +173,6 @@ export default function ItemSharedBetween({ members, price, setSharedMembers, to
             >
               <Checkbox
                 value={member.person.id}
-                isChecked={member.isIncluded}
                 onChange={() => toggleMemberIncluded(member)}
                 ms={2}
               >

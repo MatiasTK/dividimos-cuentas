@@ -21,6 +21,7 @@ import { Item, Payer, Person, SplitMember } from '../../types';
 import ItemDescription from './ItemDescription';
 import ItemPaidBy from './ItemPaidBy';
 import ItemSharedBetween from './ItemSharedBetween';
+import { CREATOR_OFFSET } from '@/app/constants';
 
 type props = {
   isOpen: boolean;
@@ -167,7 +168,12 @@ export default function ItemModal({
       return;
     }
 
-    const totalShared = itemInfo.sharedBetween.reduce((acc, curr) => acc + curr.splitAmount, 0);
+    const totalShared = itemInfo.sharedBetween.reduce((acc, curr) => {
+      if (curr.isIncluded) {
+        return acc + curr.splitAmount;
+      }
+      return acc;
+    }, 0);
     console.log(totalShared);
     if (totalShared > itemInfo.price) {
       setError({
@@ -216,6 +222,25 @@ export default function ItemModal({
       }));
       return sharedMembers;
     }
+
+    if (itemInfo.sharedBetween.length < people.length + CREATOR_OFFSET) {
+      const unifiedMembers = [creator, ...people];
+      const sharedMembers = unifiedMembers.map((member) => {
+        const sharedMember = itemInfo.sharedBetween.find((m) => m.person.id === member.id);
+        return sharedMember
+          ? sharedMember
+          : {
+              splitAmount: itemInfo.price / people.length,
+              person: member,
+              splitMethod: 'equally' as const,
+              isIncluded: true,
+              porcentalValue: 0,
+              manuallyValue: 0,
+            };
+      });
+      return sharedMembers;
+    }
+
     return itemInfo.sharedBetween;
   };
 
