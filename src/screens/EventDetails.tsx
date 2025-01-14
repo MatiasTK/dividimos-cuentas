@@ -1,0 +1,519 @@
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  Circle,
+  Flex,
+  IconButton,
+  SimpleGrid,
+  Stack,
+  Text,
+  useColorModeValue,
+  useDisclosure,
+} from '@chakra-ui/react';
+import ItemModal from '@components/ItemModal/ItemModal';
+import MemberModal from '@components/MemberModal/MemberModal';
+import { useEvent } from '@context/EventContext';
+import {
+  LuCalendar,
+  LuClipboard,
+  LuMail,
+  LuPackage,
+  LuPackagePlus,
+  LuReceiptText,
+  LuShare2,
+  LuSquarePen,
+  LuTrash2,
+  LuUser,
+  LuUserPen,
+  LuUserPlus,
+  LuUserX,
+} from 'react-icons/lu';
+import { Item } from '@types';
+import CopyModal from '@components/CopyModal/CopyModal';
+
+//TODO: No mostrar todos los miembros, limitarlo a 3 y mostrar un botón para ver todos
+
+export default function EventDetails() {
+  const { currentEvent } = useEvent();
+
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const {
+    isOpen: isItemModalOpen,
+    onOpen: onItemModalOpen,
+    onClose: onItemModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isMemberModalOpen,
+    onOpen: onMemberModalOpen,
+    onClose: onMemberModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCopyModalOpen,
+    onOpen: onCopyModalOpen,
+    onClose: onCopyModalClose,
+  } = useDisclosure();
+
+  function calculateItemSplit(item: Item): {
+    owes: Map<string, number>;
+    gets: Map<string, number>;
+  } {
+    const owes = new Map<string, number>();
+    const gets = new Map<string, number>();
+
+    // Calculate total item cost
+    const totalItemCost = item.paidBy.reduce((sum, payer) => sum + payer.amount, 0);
+
+    item.splitBetween.forEach((member) => {
+      let amount = 0;
+
+      switch (member.splitMethod.type) {
+        case 'equal':
+          amount = totalItemCost / item.splitBetween.length;
+          break;
+        case 'fixed':
+          amount = member.splitMethod.amount;
+          break;
+        case 'percentage':
+          amount = totalItemCost * (member.splitMethod.percentage / 100);
+          break;
+      }
+
+      owes.set(member.name, (owes.get(member.name) || 0) + amount);
+    });
+
+    // Add amounts to payers
+    item.paidBy.forEach((payer) => {
+      gets.set(payer.name, (gets.get(payer.name) || 0) + payer.amount);
+    });
+
+    return { owes, gets };
+  }
+
+  function calculateFinalSettlement(items: Item[]): Array<{
+    from: string;
+    to: string;
+    amount: number;
+  }> {
+    const totalOwes = new Map<string, number>();
+    const totalGets = new Map<string, number>();
+
+    // Calculate total amounts for all items
+    items.forEach((item) => {
+      const itemSplit = calculateItemSplit(item);
+
+      itemSplit.owes.forEach((amount, person) => {
+        totalOwes.set(person, (totalOwes.get(person) || 0) + amount);
+      });
+
+      itemSplit.gets.forEach((amount, person) => {
+        totalGets.set(person, (totalGets.get(person) || 0) + amount);
+      });
+    });
+
+    // Calculate net amounts and create settlements
+    const settlements: Array<{ from: string; to: string; amount: number }> = [];
+    const netAmounts = new Map<string, number>();
+
+    // Calculate net amounts (positive means gets money, negative means owes money)
+    [...new Set([...totalOwes.keys(), ...totalGets.keys()])].forEach((person) => {
+      const owesAmount = totalOwes.get(person) || 0;
+      const getsAmount = totalGets.get(person) || 0;
+      netAmounts.set(person, getsAmount - owesAmount);
+    });
+
+    // Create settlements
+    while ([...netAmounts.values()].some((amount) => Math.abs(amount) > 0.01)) {
+      const debtor = [...netAmounts.entries()].find(([_, amount]) => amount < -0.01);
+      const creditor = [...netAmounts.entries()].find(([_, amount]) => amount > 0.01);
+
+      if (debtor && creditor) {
+        const amount = Math.min(Math.abs(debtor[1]), creditor[1]);
+        settlements.push({
+          from: debtor[0],
+          to: creditor[0],
+          amount: Number(amount.toFixed(2)),
+        });
+
+        netAmounts.set(debtor[0], debtor[1] + amount);
+        netAmounts.set(creditor[0], creditor[1] - amount);
+      }
+    }
+
+    return settlements;
+  }
+
+  const finalSettlements = calculateFinalSettlement(currentEvent.items);
+
+  const circleBgColor = useColorModeValue('blue.500', 'whiteAlpha.300');
+  const grayText = useColorModeValue('gray.500', 'whiteAlpha.500');
+  const cardBgColor = useColorModeValue('gray.200', 'whiteAlpha.200');
+  const cardHoverBgColor = useColorModeValue('gray.300', 'whiteAlpha.300');
+  const avatarColor = useColorModeValue('whiteAlpha.900', 'white');
+  const scrollBarThumbColor = useColorModeValue(
+    'var(--chakra-colors-gray-300)',
+    'var(--chakra-colors-whiteAlpha-400)'
+  );
+
+  return (
+    <Box mt={5}>
+      <Box>
+        <Flex justifyContent={'space-between'} alignItems={'center'}>
+          <Text fontWeight={'bold'} fontSize={'lg'} letterSpacing={'wide'} textAlign={'center'}>
+            {currentEvent.name}
+          </Text>
+          <Flex alignItems={'center'} gap={2}>
+            <LuCalendar size={16} />
+            <Text fontSize={'sm'}>{formatDate(currentEvent.date)}</Text>
+          </Flex>
+        </Flex>
+
+        <Text fontSize={'sm'} color={grayText}>
+          Creado por {currentEvent.owner.name}
+        </Text>
+
+        {currentEvent.description && (
+          <Text fontSize={'sm'} color={grayText} mt={2}>
+            {currentEvent.description}
+          </Text>
+        )}
+      </Box>
+
+      <Box>
+        <Stack mt={5} direction={'row'} justifyContent={'space-between'}>
+          <Flex alignItems={'center'}>
+            <LuUser size={24} />
+            <Text fontWeight={'bold'} ms={2}>
+              Miembros
+            </Text>
+            <Circle bgColor={circleBgColor} size={6} ml={2} color={'white'} fontSize={'sm'}>
+              {currentEvent.members.length}
+            </Circle>
+          </Flex>
+          <Button
+            leftIcon={<LuUserPlus className="LuUserPlus" size={20} />}
+            size={'md'}
+            colorScheme={'blue'}
+            onClick={onMemberModalOpen}
+          >
+            Agregar
+          </Button>
+          <MemberModal isOpen={isMemberModalOpen} onClose={onMemberModalClose} />
+        </Stack>
+        <Stack mt={5} mb={10}>
+          {currentEvent.members.length === 0 ? (
+            <Text fontSize={'sm'} color={grayText}>
+              No hay miembros aun, intenta agregando uno!
+            </Text>
+          ) : (
+            <Stack
+              spacing={4}
+              maxH={'200px'}
+              overflowY={'auto'}
+              css={{
+                '&::-webkit-scrollbar': {
+                  width: '4px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  width: '6px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: scrollBarThumbColor,
+                  borderRadius: '24px',
+                },
+              }}
+            >
+              {currentEvent.members.map((member) => {
+                return (
+                  <Flex
+                    key={member.name}
+                    alignItems={'center'}
+                    ps={4}
+                    mr={2}
+                    borderRadius="lg"
+                    justifyContent={'space-between'}
+                    bg={cardBgColor}
+                  >
+                    <Flex alignItems={'center'} gap={4}>
+                      <Avatar size={'sm'} name={member.name} color={avatarColor} />
+                      <Text>{member.name}</Text>
+                    </Flex>
+                    <ButtonGroup spacing={0}>
+                      <IconButton
+                        aria-label="Edit member"
+                        icon={<LuUserPen size={24} color="white" />}
+                        bgColor={'#517ff4'}
+                        _hover={{
+                          bgColor: '#3f6ac2',
+                        }}
+                        _active={{
+                          bgColor: '#2e548f',
+                        }}
+                        size={'lg'}
+                        px={6}
+                        borderLeftRadius={0}
+                        borderRightRadius={0}
+                        variant={'ghost'}
+                      />
+                      <IconButton
+                        aria-label="Remove member"
+                        icon={<LuUserX size={24} color="white" />}
+                        bgColor={'#fc5344'}
+                        _hover={{
+                          bgColor: '#d63a2f',
+                        }}
+                        _active={{
+                          bgColor: '#b12b1f',
+                        }}
+                        px={6}
+                        size={'lg'}
+                        borderLeftRadius={0}
+                        variant={'ghost'}
+                      />
+                    </ButtonGroup>
+                  </Flex>
+                );
+              })}
+            </Stack>
+          )}
+        </Stack>
+        <Stack direction={'row'} justifyContent={'space-between'}>
+          <Flex alignItems={'center'}>
+            <LuPackage size={24} />
+            <Text fontWeight={'bold'} ms={2}>
+              Items
+            </Text>
+            <Circle bgColor={circleBgColor} size={6} ml={2} color={'white'} fontSize={'sm'}>
+              {currentEvent.items.length}
+            </Circle>
+          </Flex>
+          <Button
+            leftIcon={<LuPackagePlus className="LuPackagePlus" size={20} />}
+            colorScheme={'blue'}
+            onClick={onItemModalOpen}
+            size={'md'}
+          >
+            Agregar
+          </Button>
+          <ItemModal isOpen={isItemModalOpen} onClose={onItemModalClose} />
+        </Stack>
+        <Stack mt={5} mb={10}>
+          {currentEvent.items.length === 0 ? (
+            <Text fontSize={'sm'} color={grayText}>
+              ¡No hay items aun! Intenta agregando uno.
+            </Text>
+          ) : (
+            <Accordion allowToggle>
+              {currentEvent.items.map((item) => {
+                return (
+                  <AccordionItem key={item.description} mb={4} borderTop={0} borderBottom={0}>
+                    <h2>
+                      <AccordionButton
+                        borderRadius={'lg'}
+                        bgColor={cardBgColor}
+                        _hover={{
+                          bgColor: cardHoverBgColor,
+                        }}
+                        _expanded={{
+                          bgColor: cardBgColor,
+                          borderBottomRadius: 0,
+                        }}
+                      >
+                        <Box as="span" textAlign="left" mr={2}>
+                          {item.description}
+                        </Box>
+                        <Text
+                          fontSize={'sm'}
+                          color={'white'}
+                          mr={'auto'}
+                          fontWeight={'bold'}
+                          bgColor={'blue.500'}
+                          borderRadius={'full'}
+                          px={2}
+                        >
+                          ${item.paidBy.reduce((acc, member) => acc + member.amount, 0)}
+                        </Text>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4} bgColor={cardBgColor} borderBottomRadius={'lg'}>
+                      <Text>
+                        <Text as={'span'} mr={1} fontWeight={'bold'}>
+                          Pagado por:
+                        </Text>
+                        {item.paidBy.map((payer) => `${payer.name} ($${payer.amount})`).join(', ')}
+                      </Text>
+                      <Text>
+                        <Text as={'span'} mr={1} fontWeight={'bold'}>
+                          Divido entre:
+                        </Text>
+                        {item.splitBetween
+                          .map((member) => {
+                            const splitMethod = member.splitMethod;
+                            switch (splitMethod.type) {
+                              case 'equal':
+                                return `${member.name} (equitativo)`;
+                              case 'fixed':
+                                return `${member.name} ($${splitMethod.amount})`;
+                              case 'percentage':
+                                return `${member.name} (${splitMethod.percentage}%)`;
+                            }
+                          })
+                          .join(', ')}
+                      </Text>
+                      <ButtonGroup mt={2} w={'full'}>
+                        <Button
+                          leftIcon={<LuSquarePen size={22} />}
+                          bgColor={'#517ff4'}
+                          _hover={{
+                            bgColor: '#3f6ac2',
+                          }}
+                          _active={{
+                            bgColor: '#2e548f',
+                          }}
+                          w={'full'}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          leftIcon={<LuTrash2 size={22} />}
+                          bgColor={'#fc5344'}
+                          _hover={{
+                            bgColor: '#d63a2f',
+                          }}
+                          _active={{
+                            bgColor: '#b12b1f',
+                          }}
+                          w={'full'}
+                        >
+                          Eliminar
+                        </Button>
+                      </ButtonGroup>
+                    </AccordionPanel>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
+          )}
+        </Stack>
+        <Stack direction={'row'} alignItems={'center'}>
+          <LuReceiptText size={24} />
+          <Text fontWeight={'bold'} ms={2}>
+            Deudas
+          </Text>
+          <Circle bgColor={circleBgColor} size={6} ml={2} color={'white'} fontSize={'sm'}>
+            {currentEvent.items.length === 0 ? 0 : finalSettlements.length}
+          </Circle>
+        </Stack>
+        <Stack mt={5} mb={10}>
+          {currentEvent.items.length === 0 ? (
+            <Text fontSize={'sm'} color={grayText}>
+              ¡Todavía no hay deudas! Agrega un ítem para comenzar.
+            </Text>
+          ) : (
+            <Stack
+              spacing={4}
+              maxH={'200px'}
+              overflowY={'auto'}
+              css={{
+                '&::-webkit-scrollbar': {
+                  width: '4px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  width: '6px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: scrollBarThumbColor,
+                  borderRadius: '24px',
+                },
+              }}
+            >
+              {finalSettlements.map((settlement, index) => {
+                return (
+                  <Flex
+                    key={index}
+                    alignItems={'center'}
+                    py={2}
+                    px={4}
+                    mr={2}
+                    borderRadius="lg"
+                    bg={cardBgColor}
+                  >
+                    <Flex alignItems={'center'} gap={2}>
+                      <Avatar name={settlement.from} size={'xs'} /> {settlement.from} debe
+                      <Text
+                        fontSize={'lg'}
+                        color={'blue.500'}
+                        letterSpacing={'tighter'}
+                        fontWeight={'bold'}
+                      >
+                        ${settlement.amount}
+                      </Text>
+                      a
+                      <Avatar name={settlement.to} size={'xs'} /> {settlement.to}
+                    </Flex>
+                  </Flex>
+                );
+              })}
+            </Stack>
+          )}
+        </Stack>
+        <Stack mt={10} direction={'row'} alignItems={'center'}>
+          <LuShare2 size={24} />
+          <Text fontWeight={'bold'} ms={2}>
+            Acciones
+          </Text>
+        </Stack>
+        <CopyModal
+          isOpen={isCopyModalOpen}
+          onClose={onCopyModalClose}
+          settlements={finalSettlements}
+        />
+        <SimpleGrid mt={5} gap={4} columns={[2, 3]}>
+          <Button
+            colorScheme={'blue'}
+            display={'flex'}
+            flexDir={'column'}
+            alignItems={'center'}
+            justifyContent={'center'}
+            h={'full'}
+            py={4}
+            gap={2}
+            onClick={onCopyModalOpen}
+          >
+            <LuClipboard size={24} />
+            <Text fontSize={'sm'}>Copiar Información</Text>
+          </Button>
+          <Button
+            colorScheme={'blue'}
+            display={'flex'}
+            flexDir={'column'}
+            h={'full'}
+            gap={2}
+            disabled
+          >
+            <LuMail size={24} />
+            <Text fontSize={'sm'} w={'100%'} whiteSpace={'pre-wrap'}>
+              Enviar mails (próximamente)
+            </Text>
+          </Button>
+        </SimpleGrid>
+      </Box>
+    </Box>
+  );
+}
