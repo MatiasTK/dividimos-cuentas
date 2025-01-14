@@ -11,10 +11,16 @@ interface EventContextProps {
   createEvent: (name: string, description: string, date: Date) => void;
   setEventOwner: (name: string, email: string | undefined, cvu: string | undefined) => void;
   addMember: (name: string, email: string | undefined, cvu: string | undefined) => void;
+  editMember: (
+    oldName: string,
+    name: string,
+    email: string | undefined,
+    cvu: string | undefined
+  ) => void;
+  deleteMember: (member: Person) => void;
   addItem: (item: Item) => void;
   deleteSavedEvents: () => void;
   setCurrentEvent: (event: Event) => void;
-  removeMember: (member: Person) => void;
 }
 
 interface EventProviderProps {
@@ -67,13 +73,56 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
     updateCurrentEvent(newCurrent);
   }
 
-  function removeMember(member: Person) {
-    setCurrentEvent((prevEvent) => {
+  function editMember(
+    oldName: string,
+    name: string,
+    email: string | undefined,
+    cvu: string | undefined
+  ) {
+    const newMembers = currentEvent.members.map((m) => {
+      if (m.name === oldName) {
+        return { name, email, cvu };
+      }
+      return m;
+    });
+
+    const newItemMembers = currentEvent.items.map((item) => {
       return {
-        ...prevEvent,
-        members: prevEvent.members.filter((m) => m.name !== member.name),
+        ...item,
+        paidBy: item.paidBy.map((payer) => {
+          if (payer.name === oldName) {
+            return { name, email, cvu, amount: payer.amount };
+          }
+          return payer;
+        }),
+        splitBetween: item.splitBetween.map((member) => {
+          if (member.name === oldName) {
+            return { name, email, cvu, splitMethod: member.splitMethod };
+          }
+          return member;
+        }),
       };
     });
+
+    const newCurrent = { ...currentEvent, members: newMembers, items: newItemMembers };
+
+    updateCurrentEvent(newCurrent);
+  }
+
+  function deleteMember(member: Person) {
+    const newMembers = currentEvent.members.filter((m) => m.name !== member.name);
+
+    const newItems = currentEvent.items.map((item) => {
+      return {
+        ...item,
+        paidBy: item.paidBy.filter((p) => p.name !== member.name),
+        splitBetween: item.splitBetween.filter((s) => s.name !== member.name),
+      };
+    });
+
+    const newCurrent = { ...currentEvent, members: newMembers, items: newItems };
+
+    updateCurrentEvent(newCurrent);
   }
 
   function updateCurrentEvent(current: Event) {
@@ -121,9 +170,10 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
         setEventOwner,
         setCurrentEvent,
         addMember,
+        editMember,
+        deleteMember,
         deleteSavedEvents,
         addItem,
-        removeMember,
       }}
     >
       {children}

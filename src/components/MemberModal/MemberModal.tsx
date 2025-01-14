@@ -17,16 +17,19 @@ import {
 import { useEvent } from '@context/EventContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createPersonSchema } from '@schemas';
+import { Person } from '@types';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 type MemberModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  memberToEdit?: Person;
 };
 
-export default function MemberModal({ isOpen, onClose }: MemberModalProps) {
-  const { addMember, currentEvent } = useEvent();
+export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberModalProps) {
+  const { addMember, editMember, currentEvent } = useEvent();
   const {
     handleSubmit,
     register,
@@ -35,9 +38,24 @@ export default function MemberModal({ isOpen, onClose }: MemberModalProps) {
   } = useForm<z.infer<ReturnType<typeof createPersonSchema>>>({
     resolver: zodResolver(createPersonSchema(currentEvent.members)),
   });
+  const isEditing = !!memberToEdit;
+
+  // Reset form when memberToEdit changes
+  useEffect(() => {
+    reset({
+      nombre: memberToEdit?.name || '',
+      email: memberToEdit?.email || '',
+      CVU: memberToEdit?.cvu || '',
+    });
+  }, [memberToEdit]);
 
   const onSubmit = (values: z.infer<ReturnType<typeof createPersonSchema>>) => {
-    addMember(values.nombre, values.email, values.CVU);
+    if (isEditing) {
+      editMember(memberToEdit!.name, values.nombre, values.email, values.CVU);
+    } else {
+      addMember(values.nombre, values.email, values.CVU);
+    }
+
     reset();
     onClose();
   };
@@ -54,7 +72,7 @@ export default function MemberModal({ isOpen, onClose }: MemberModalProps) {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Agregar miembro</ModalHeader>
+        <ModalHeader>{isEditing ? 'Editar' : 'Agregar'} miembro</ModalHeader>
         <ModalCloseButton />
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalBody>
@@ -102,7 +120,7 @@ export default function MemberModal({ isOpen, onClose }: MemberModalProps) {
           </ModalBody>
           <ModalFooter>
             <Button isLoading={isSubmitting} colorScheme="blue" type="submit" w="full">
-              Agregar
+              {isEditing ? 'Editar' : 'Agregar'}
             </Button>
           </ModalFooter>
         </form>

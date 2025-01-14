@@ -35,13 +35,14 @@ import {
   LuUserPlus,
   LuUserX,
 } from 'react-icons/lu';
-import { Item } from '@types';
+import { Item, Person } from '@types';
 import CopyModal from '@components/CopyModal/CopyModal';
-
-//TODO: No mostrar todos los miembros, limitarlo a 3 y mostrar un botón para ver todos
+import { useState } from 'react';
+import DeleteDialog from '@components/DeleteDialog';
 
 export default function EventDetails() {
-  const { currentEvent } = useEvent();
+  const { deleteMember, currentEvent } = useEvent();
+  const [selectedMember, setSelectedMember] = useState<Person>();
 
   const formatDate = (date: Date) => {
     const d = new Date(date);
@@ -67,6 +68,12 @@ export default function EventDetails() {
     isOpen: isCopyModalOpen,
     onOpen: onCopyModalOpen,
     onClose: onCopyModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteMemberDialogOpen,
+    onOpen: onDeleteMemberDialogOpen,
+    onClose: onDeleteMemberDialogClose,
   } = useDisclosure();
 
   function calculateItemSplit(item: Item): {
@@ -213,7 +220,11 @@ export default function EventDetails() {
           >
             Agregar
           </Button>
-          <MemberModal isOpen={isMemberModalOpen} onClose={onMemberModalClose} />
+          <MemberModal
+            isOpen={isMemberModalOpen}
+            onClose={onMemberModalClose}
+            memberToEdit={selectedMember}
+          />
         </Stack>
         <Stack mt={5} mb={10}>
           {currentEvent.members.length === 0 ? (
@@ -269,6 +280,10 @@ export default function EventDetails() {
                         borderLeftRadius={0}
                         borderRightRadius={0}
                         variant={'ghost'}
+                        onClick={() => {
+                          setSelectedMember(member);
+                          onMemberModalOpen();
+                        }}
                       />
                       <IconButton
                         aria-label="Remove member"
@@ -284,11 +299,26 @@ export default function EventDetails() {
                         size={'lg'}
                         borderLeftRadius={0}
                         variant={'ghost'}
+                        onClick={() => {
+                          setSelectedMember(member);
+                          onDeleteMemberDialogOpen();
+                        }}
                       />
                     </ButtonGroup>
                   </Flex>
                 );
               })}
+              <DeleteDialog
+                isOpen={isDeleteMemberDialogOpen}
+                onClose={onDeleteMemberDialogClose}
+                onConfirm={() => deleteMember(selectedMember!)}
+                title={'Eliminar miembro'}
+              >
+                <Text>
+                  ¿Estás seguro de que deseas eliminar a <strong>{selectedMember?.name}</strong> de
+                  todos los items y deudas asociadas? Esta acción no se puede deshacer.
+                </Text>
+              </DeleteDialog>
             </Stack>
           )}
         </Stack>
