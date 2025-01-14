@@ -9,14 +9,9 @@ interface EventContextProps {
   events: Event[];
   currentEvent: Event;
   createEvent: (name: string, description: string, date: Date) => void;
-  setEventOwner: (name: string, email: string | undefined, cvu: string | undefined) => void;
-  addMember: (name: string, email: string | undefined, cvu: string | undefined) => void;
-  editMember: (
-    oldName: string,
-    name: string,
-    email: string | undefined,
-    cvu: string | undefined
-  ) => void;
+  setEventOwner: (member: Person) => void;
+  addMember: (member: Person) => void;
+  editMember: (oldName: string, member: Person) => void;
   deleteMember: (member: Person) => void;
   addItem: (item: Item) => void;
   deleteSavedEvents: () => void;
@@ -60,28 +55,20 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
     });
   }
 
-  function setEventOwner(name: string, email: string | undefined, cvu: string | undefined) {
-    const ownerPerson = { name, email, cvu };
-    const newCurrent = { ...currentEvent, members: [ownerPerson], owner: ownerPerson };
+  function setEventOwner(member: Person) {
+    const newCurrent = { ...currentEvent, members: [member], owner: member };
     updateCurrentEvent(newCurrent);
   }
 
-  function addMember(name: string, email: string | undefined, cvu: string | undefined) {
-    const newMembers = [...currentEvent.members, { name, email, cvu }];
-    const newCurrent = { ...currentEvent, members: newMembers };
-
+  function addMember(member: Person) {
+    const newCurrent = { ...currentEvent, members: [...currentEvent.members, member] };
     updateCurrentEvent(newCurrent);
   }
 
-  function editMember(
-    oldName: string,
-    name: string,
-    email: string | undefined,
-    cvu: string | undefined
-  ) {
+  function editMember(oldName: string, editedMember: Person) {
     const newMembers = currentEvent.members.map((m) => {
       if (m.name === oldName) {
-        return { name, email, cvu };
+        return editedMember;
       }
       return m;
     });
@@ -91,13 +78,13 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
         ...item,
         paidBy: item.paidBy.map((payer) => {
           if (payer.name === oldName) {
-            return { name, email, cvu, amount: payer.amount };
+            return { ...editedMember, amount: payer.amount };
           }
           return payer;
         }),
         splitBetween: item.splitBetween.map((member) => {
           if (member.name === oldName) {
-            return { name, email, cvu, splitMethod: member.splitMethod };
+            return { ...editedMember, splitMethod: member.splitMethod };
           }
           return member;
         }),

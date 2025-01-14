@@ -50,10 +50,15 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
   }, [memberToEdit]);
 
   const onSubmit = (values: z.infer<ReturnType<typeof createPersonSchema>>) => {
+    const member: Person = {
+      name: values.nombre,
+      email: values.email,
+      cvu: values.CVU,
+    };
     if (isEditing) {
-      editMember(memberToEdit!.name, values.nombre, values.email, values.CVU);
+      editMember(memberToEdit!.name, member);
     } else {
-      addMember(values.nombre, values.email, values.CVU);
+      addMember(member);
     }
 
     reset();

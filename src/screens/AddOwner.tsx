@@ -13,6 +13,7 @@ import {
 import { useEvent } from '@context/EventContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createPersonSchema } from '@schemas';
+import { Person } from '@types';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -33,7 +34,12 @@ export default function AddOwner({ goNextScreen }: AddOwnerProps) {
   const { setEventOwner } = useEvent();
 
   function onSubmit(values: z.infer<ReturnType<typeof createPersonSchema>>) {
-    setEventOwner(values.nombre, values.email, values.CVU);
+    const member: Person = {
+      name: values.nombre,
+      email: values.email,
+      cvu: values.CVU,
+    };
+    setEventOwner(member);
     goNextScreen();
   }
 

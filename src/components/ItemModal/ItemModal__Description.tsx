@@ -9,11 +9,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Stack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';

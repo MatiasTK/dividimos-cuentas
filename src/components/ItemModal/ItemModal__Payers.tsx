@@ -59,8 +59,6 @@ export default function ItemModal__Payers({
     },
   });
 
-  console.log(itemInfo.paidBy);
-
   function handleRemoveMember(member: Payer) {
     const memberIndex = selectedMembers.findIndex((m) => m.name === member.name);
 
