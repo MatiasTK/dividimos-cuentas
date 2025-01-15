@@ -29,6 +29,7 @@ type MemberModalProps = {
 };
 
 export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberModalProps) {
+  const isEditing = !!memberToEdit;
   const { addMember, editMember, currentEvent } = useEvent();
   const {
     handleSubmit,
@@ -38,7 +39,6 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
   } = useForm<z.infer<ReturnType<typeof createPersonSchema>>>({
     resolver: zodResolver(createPersonSchema(currentEvent.members)),
   });
-  const isEditing = !!memberToEdit;
 
   // Reset form when memberToEdit changes
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
       email: memberToEdit?.email || '',
       CVU: memberToEdit?.cvu || '',
     });
-  }, [memberToEdit, reset]);
+  }, [memberToEdit]);
 
   const onSubmit = (values: z.infer<ReturnType<typeof createPersonSchema>>) => {
     const member: Person = {
@@ -55,6 +55,7 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
       email: values.email,
       cvu: values.CVU,
     };
+
     if (isEditing) {
       editMember(memberToEdit!.name, member);
     } else {

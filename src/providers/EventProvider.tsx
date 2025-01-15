@@ -139,6 +139,26 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
     updateCurrentEvent(newEvent);
   }
 
+  function editItem(originalItemId: string, item: Item) {
+    const newItems = currentEvent.items.map((i) => {
+      if (i.id === originalItemId) {
+        return item;
+      }
+      return i;
+    });
+
+    const newCurrent = { ...currentEvent, items: newItems };
+
+    updateCurrentEvent(newCurrent);
+  }
+
+  function deleteItem(item: Item) {
+    const newItems = currentEvent.items.filter((i) => i.id !== item.id);
+    const newCurrent = { ...currentEvent, items: newItems };
+
+    updateCurrentEvent(newCurrent);
+  }
+
   function deleteSavedEvents() {
     setEvents([]);
     localStorage.removeItem('events');
@@ -157,6 +177,8 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
         deleteMember,
         deleteSavedEvents,
         addItem,
+        editItem,
+        deleteItem,
       }}
     >
       {children}

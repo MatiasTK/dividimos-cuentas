@@ -11,6 +11,8 @@ export interface EventContextProps {
   editMember: (oldName: string, member: Person) => void;
   deleteMember: (member: Person) => void;
   addItem: (item: Item) => void;
+  editItem: (originalItemId: string, item: Item) => void;
+  deleteItem: (item: Item) => void;
   deleteSavedEvents: () => void;
   setCurrentEvent: (event: Event) => void;
 }

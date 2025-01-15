@@ -35,7 +35,7 @@ import {
   LuUserPlus,
   LuUserX,
 } from 'react-icons/lu';
-import { Person } from '@types';
+import { Item, Person } from '@types';
 import CopyModal from '@components/CopyModal/CopyModal';
 import { useState } from 'react';
 import DeleteDialog from '@components/DeleteDialog';
@@ -43,8 +43,10 @@ import { calculateFinalSettlement } from '@lib/calculateBills';
 import formatDate from '@lib/formatDate';
 
 export default function EventDetails() {
-  const { deleteMember, currentEvent } = useEvent();
+  const { deleteMember, deleteItem, currentEvent } = useEvent();
+
   const [selectedMember, setSelectedMember] = useState<Person>();
+  const [selectedItem, setSelectedItem] = useState<Item>();
 
   const {
     isOpen: isItemModalOpen,
@@ -68,6 +70,12 @@ export default function EventDetails() {
     isOpen: isDeleteMemberDialogOpen,
     onOpen: onDeleteMemberDialogOpen,
     onClose: onDeleteMemberDialogClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteItemDialogOpen,
+    onOpen: onDeleteItemDialogOpen,
+    onClose: onDeleteItemDialogClose,
   } = useDisclosure();
 
   const finalSettlements = calculateFinalSettlement(currentEvent.items);
@@ -127,7 +135,10 @@ export default function EventDetails() {
           </Button>
           <MemberModal
             isOpen={isMemberModalOpen}
-            onClose={onMemberModalClose}
+            onClose={() => {
+              setSelectedMember(undefined);
+              onMemberModalClose();
+            }}
             memberToEdit={selectedMember}
           />
         </Stack>
@@ -247,7 +258,14 @@ export default function EventDetails() {
           >
             Agregar
           </Button>
-          <ItemModal isOpen={isItemModalOpen} onClose={onItemModalClose} />
+          <ItemModal
+            isOpen={isItemModalOpen}
+            onClose={() => {
+              setSelectedItem(undefined);
+              onItemModalClose();
+            }}
+            editingItem={selectedItem}
+          />
         </Stack>
         <Stack mt={5} mb={10}>
           {currentEvent.items.length === 0 ? (
@@ -324,6 +342,10 @@ export default function EventDetails() {
                             bgColor: '#2e548f',
                           }}
                           w={'full'}
+                          onClick={() => {
+                            setSelectedItem(item);
+                            onItemModalOpen();
+                          }}
                         >
                           Editar
                         </Button>
@@ -337,6 +359,10 @@ export default function EventDetails() {
                             bgColor: '#b12b1f',
                           }}
                           w={'full'}
+                          onClick={() => {
+                            setSelectedItem(item);
+                            onDeleteItemDialogOpen();
+                          }}
                         >
                           Eliminar
                         </Button>
@@ -347,6 +373,16 @@ export default function EventDetails() {
               })}
             </Accordion>
           )}
+          <DeleteDialog
+            isOpen={isDeleteItemDialogOpen}
+            onClose={onDeleteItemDialogClose}
+            title={'Eliminar item'}
+            onConfirm={() => deleteItem(selectedItem!)}
+          >
+            <Text>
+              ¿Estás seguro de que deseas eliminar este item? Esta acción no se puede deshacer.
+            </Text>
+          </DeleteDialog>
         </Stack>
         <Stack direction={'row'} alignItems={'center'}>
           <LuReceiptText size={24} />

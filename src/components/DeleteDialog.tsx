@@ -27,7 +27,16 @@ export default function DeleteDialog({
   const cancelRef = useRef(null);
 
   return (
-    <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
+    <AlertDialog
+      isOpen={isOpen}
+      leastDestructiveRef={cancelRef}
+      size={{
+        base: 'sm',
+        md: 'md',
+      }}
+      onClose={onClose}
+      isCentered
+    >
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize={'lg'} fontWeight={'bold'}>
@@ -35,7 +44,7 @@ export default function DeleteDialog({
           </AlertDialogHeader>
           <AlertDialogBody>{props.children}</AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose}>
+            <Button ref={cancelRef} onClick={onClose} variant={'ghost'}>
               Cancelar
             </Button>
             <Button

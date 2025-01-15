@@ -22,11 +22,13 @@ type ItemModal__DescriptionProps = {
   itemInfo: {
     description: string;
   };
+  isEditing?: boolean;
 };
 
 export default function ItemModal__Description({
   itemInfo,
   onTabDone,
+  isEditing,
 }: ItemModal__DescriptionProps) {
   const {
     handleSubmit,
@@ -42,7 +44,7 @@ export default function ItemModal__Description({
 
   return (
     <ModalContent>
-      <ModalHeader>Agregar detalles</ModalHeader>
+      <ModalHeader>{isEditing ? 'Editar' : 'Agregar'} detalles</ModalHeader>
       <ModalCloseButton />
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>

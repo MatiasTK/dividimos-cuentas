@@ -39,9 +39,14 @@ type ItemModal__SplitProps = {
   goBack: () => void;
   itemInfo: Item;
   setSplitMembers: (members: SplitMember[]) => void;
+  isEditing?: boolean;
 };
 
-export default function ItemModal__Split({ goBack, setSplitMembers }: ItemModal__SplitProps) {
+export default function ItemModal__Split({
+  goBack,
+  setSplitMembers,
+  isEditing,
+}: ItemModal__SplitProps) {
   const { currentEvent } = useEvent();
 
   const {
@@ -143,7 +148,7 @@ export default function ItemModal__Split({ goBack, setSplitMembers }: ItemModal_
 
   return (
     <ModalContent>
-      <ModalHeader>Agregar división</ModalHeader>
+      <ModalHeader>{isEditing ? 'Editar' : 'Agregar'} división</ModalHeader>
       <ModalCloseButton />
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
@@ -195,7 +200,7 @@ export default function ItemModal__Split({ goBack, setSplitMembers }: ItemModal_
             Atras
           </Button>
           <Button isLoading={isSubmitting} colorScheme="blue" mr={3} type="submit">
-            Siguiente
+            {isEditing ? 'Modificar' : 'Agregar'}
           </Button>
         </ModalFooter>
       </form>

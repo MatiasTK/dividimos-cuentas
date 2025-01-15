@@ -1,5 +1,5 @@
 import { Modal, ModalOverlay } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ItemModal__Description from '@components/ItemModal/ItemModal__Description';
 import ItemModal__Payers from '@components/ItemModal/ItemModal__Payers';
 import ItemModal__Split from '@components/ItemModal/ItemModal__Split';
@@ -10,9 +10,10 @@ import { useEvent } from '@hooks/useEvent';
 type ItemModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  editingItem?: Item;
 };
 
-export default function ItemModal({ isOpen, onClose }: ItemModalProps) {
+export default function ItemModal({ isOpen, editingItem, onClose }: ItemModalProps) {
   const [currentItem, setCurrentItem] = useState<Item>({
     id: '',
     description: '',
@@ -20,9 +21,23 @@ export default function ItemModal({ isOpen, onClose }: ItemModalProps) {
     splitBetween: [],
   });
 
-  const { addItem } = useEvent();
+  const { addItem, editItem } = useEvent();
 
   const [currentTab, setCurrentTab] = useState(ModalTabs.Description);
+
+  useEffect(() => {
+    if (editingItem) {
+      setCurrentItem(editingItem);
+      setCurrentTab(ModalTabs.Description);
+    } else {
+      setCurrentItem({
+        id: '',
+        description: '',
+        paidBy: [],
+        splitBetween: [],
+      });
+    }
+  }, [editingItem]);
 
   const handleNext = (description: string) => {
     setCurrentItem((prevItem) => ({
@@ -52,14 +67,20 @@ export default function ItemModal({ isOpen, onClose }: ItemModalProps) {
   };
 
   const setSplitMembers = (members: SplitMember[]) => {
-    const finalItem = { ...currentItem, splitBetween: members };
-    addItem(finalItem);
+    if (editingItem) {
+      const finalItem = { ...currentItem, splitBetween: members };
+      editItem(editingItem.id, finalItem);
+    } else {
+      const finalItem = { ...currentItem, splitBetween: members };
+      addItem(finalItem);
+    }
     setCurrentItem({
       id: '',
       description: '',
       paidBy: [],
       splitBetween: [],
     });
+
     setCurrentTab(ModalTabs.Description);
     onClose();
   };
@@ -67,13 +88,20 @@ export default function ItemModal({ isOpen, onClose }: ItemModalProps) {
   const renderTab = () => {
     switch (currentTab) {
       case ModalTabs.Description:
-        return <ItemModal__Description itemInfo={currentItem} onTabDone={handleNext} />;
+        return (
+          <ItemModal__Description
+            itemInfo={currentItem}
+            onTabDone={handleNext}
+            isEditing={!!editingItem}
+          />
+        );
       case ModalTabs.Payers:
         return (
           <ItemModal__Payers
             itemInfo={currentItem}
             setPayers={setPaidByMembers}
             goBack={handleBack}
+            isEditing={!!editingItem}
           />
         );
       case ModalTabs.Split:
@@ -82,6 +110,7 @@ export default function ItemModal({ isOpen, onClose }: ItemModalProps) {
             itemInfo={currentItem}
             goBack={handleBack}
             setSplitMembers={setSplitMembers}
+            isEditing={!!editingItem}
           />
         );
     }

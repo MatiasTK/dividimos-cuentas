@@ -36,12 +36,14 @@ type ItemModal__DescriptionProps = {
   goBack: () => void;
   itemInfo: Item;
   setPayers: (members: Payer[]) => void;
+  isEditing?: boolean;
 };
 
 export default function ItemModal__Payers({
   goBack,
   itemInfo,
   setPayers,
+  isEditing,
 }: ItemModal__DescriptionProps) {
   const { currentEvent } = useEvent();
   const [selectedMembers, setSelectedMembers] = useState(itemInfo.paidBy);
@@ -93,7 +95,7 @@ export default function ItemModal__Payers({
 
   return (
     <ModalContent>
-      <ModalHeader>Agregar pagadores</ModalHeader>
+      <ModalHeader>{isEditing ? 'Editar' : 'Agregar'} pagadores</ModalHeader>
       <ModalCloseButton />
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>

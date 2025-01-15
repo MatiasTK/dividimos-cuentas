@@ -27,6 +27,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useRef } from 'react';
 import { LuCalendar } from 'react-icons/lu';
+import DeleteDialog from '@components/DeleteDialog';
 
 type CreateEventProps = {
   goNextScreen: () => void;
@@ -45,7 +46,6 @@ export default function CreateEvent({ goNextScreen, selectCustomEvent }: CreateE
   const { createEvent, events, setCurrentEvent, deleteSavedEvents } = useEvent();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef(null);
 
   function onSubmit(values: z.infer<typeof EventoSchema>) {
     createEvent(values.nombre, values.descripcion, values.fecha);
@@ -176,39 +176,14 @@ export default function CreateEvent({ goNextScreen, selectCustomEvent }: CreateE
             Borrar todos los eventos
           </Button>
         )}
-        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Borrar todos los eventos
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                ¿Estás seguro que deseas borrar todos los eventos? Esta acción no se puede deshacer.
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose} variant={'ghost'}>
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleDeleteSavedEvents}
-                  ml={3}
-                  bgColor={'red.500'}
-                  color={'white'}
-                  _hover={{
-                    bgColor: 'red.600',
-                  }}
-                  _active={{
-                    bgColor: 'red.700',
-                  }}
-                >
-                  Borrar
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
+        <DeleteDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          onConfirm={handleDeleteSavedEvents}
+          title="Borrar todos los eventos"
+        >
+          ¿Estás seguro que deseas borrar todos los eventos? Esta acción no se puede deshacer.
+        </DeleteDialog>
       </Stack>
     </>
   );
