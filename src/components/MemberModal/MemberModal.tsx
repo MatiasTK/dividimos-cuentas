@@ -14,7 +14,7 @@ import {
   Stack,
   ModalCloseButton,
 } from '@chakra-ui/react';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createPersonSchema } from '@schemas';
 import { Person } from '@types';

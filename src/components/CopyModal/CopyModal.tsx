@@ -9,7 +9,7 @@ import {
   ModalOverlay,
   Textarea,
 } from '@chakra-ui/react';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import { Person } from '@types';
 import { useRef, useState } from 'react';
 

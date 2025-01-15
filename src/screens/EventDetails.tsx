@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import ItemModal from '@components/ItemModal/ItemModal';
 import MemberModal from '@components/MemberModal/MemberModal';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import {
   LuCalendar,
   LuClipboard,
@@ -278,32 +278,34 @@ export default function EventDetails() {
                         size={'lg'}
                         px={6}
                         borderLeftRadius={0}
-                        borderRightRadius={0}
+                        borderRightRadius={member.name === currentEvent.owner.name ? 'lg' : 0}
                         variant={'ghost'}
                         onClick={() => {
                           setSelectedMember(member);
                           onMemberModalOpen();
                         }}
                       />
-                      <IconButton
-                        aria-label="Remove member"
-                        icon={<LuUserX size={24} color="white" />}
-                        bgColor={'#fc5344'}
-                        _hover={{
-                          bgColor: '#d63a2f',
-                        }}
-                        _active={{
-                          bgColor: '#b12b1f',
-                        }}
-                        px={6}
-                        size={'lg'}
-                        borderLeftRadius={0}
-                        variant={'ghost'}
-                        onClick={() => {
-                          setSelectedMember(member);
-                          onDeleteMemberDialogOpen();
-                        }}
-                      />
+                      {member.name !== currentEvent.owner.name && (
+                        <IconButton
+                          aria-label="Remove member"
+                          icon={<LuUserX size={24} color="white" />}
+                          bgColor={'#fc5344'}
+                          _hover={{
+                            bgColor: '#d63a2f',
+                          }}
+                          _active={{
+                            bgColor: '#b12b1f',
+                          }}
+                          px={6}
+                          size={'lg'}
+                          borderLeftRadius={0}
+                          variant={'ghost'}
+                          onClick={() => {
+                            setSelectedMember(member);
+                            onDeleteMemberDialogOpen();
+                          }}
+                        />
+                      )}
                     </ButtonGroup>
                   </Flex>
                 );

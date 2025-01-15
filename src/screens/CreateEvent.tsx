@@ -19,7 +19,7 @@ import {
   AlertDialogFooter,
   AlertDialogContent,
 } from '@chakra-ui/react';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EventoSchema } from '@schemas';
 import { Event } from '@/types';

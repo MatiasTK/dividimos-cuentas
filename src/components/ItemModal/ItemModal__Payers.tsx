@@ -22,7 +22,7 @@ import {
   useColorModeValue,
   InputLeftElement,
 } from '@chakra-ui/react';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Item, Payer } from '@/types';
 import { useState } from 'react';

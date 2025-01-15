@@ -6,7 +6,7 @@ import { Screen } from '@/types/screens';
 import { useState } from 'react';
 import AddOwner from '@screens/AddOwner';
 import EventDetails from '@screens/EventDetails';
-import { EventProvider } from '@context/EventContext';
+import { EventProvider } from '@providers/EventProvider';
 import '@App.css';
 
 function App() {

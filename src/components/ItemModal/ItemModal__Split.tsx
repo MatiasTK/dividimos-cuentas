@@ -19,7 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import ItemModalStepper from './ItemModalStepper';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 import { LuCircleHelp } from 'react-icons/lu';
 import { SplitMember } from '@/types/splitMember';
 import { Item } from '@types';

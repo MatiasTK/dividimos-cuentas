@@ -5,7 +5,7 @@ import ItemModal__Payers from '@components/ItemModal/ItemModal__Payers';
 import ItemModal__Split from '@components/ItemModal/ItemModal__Split';
 import { Item, ModalTabs, Payer } from '@/types';
 import { SplitMember } from '@/types/splitMember';
-import { useEvent } from '@context/EventContext';
+import { useEvent } from '@hooks/useEvent';
 
 type ItemModalProps = {
   isOpen: boolean;
