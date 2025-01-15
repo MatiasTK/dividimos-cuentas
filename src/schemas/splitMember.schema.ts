@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-export const EqualSchema = z.object({
+const EqualSchema = z.object({
   type: z.literal('equal'),
 });
 
-export const FixedSchema = z.object({
+const FixedSchema = z.object({
   type: z.literal('fixed'),
   amount: z
     .number({
@@ -16,7 +16,7 @@ export const FixedSchema = z.object({
     }),
 });
 
-export const PercentageSchema = z.object({
+const PercentageSchema = z.object({
   type: z.literal('percentage'),
   percentage: z
     .number({

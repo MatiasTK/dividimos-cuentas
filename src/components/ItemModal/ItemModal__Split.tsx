@@ -16,7 +16,6 @@ import {
   useColorModeValue,
   IconButton,
   useToast,
-  Box,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';

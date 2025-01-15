@@ -1,10 +1,10 @@
 import { Person } from './person';
 
-export type Equal = {
+type Equal = {
   type: 'equal';
 };
 
-export type Fixed = {
+type Fixed = {
   type: 'fixed';
   amount: number;
 };
