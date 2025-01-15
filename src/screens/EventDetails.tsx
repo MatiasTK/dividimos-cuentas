@@ -35,22 +35,16 @@ import {
   LuUserPlus,
   LuUserX,
 } from 'react-icons/lu';
-import { Item, Person } from '@types';
+import { Person } from '@types';
 import CopyModal from '@components/CopyModal/CopyModal';
 import { useState } from 'react';
 import DeleteDialog from '@components/DeleteDialog';
+import { calculateFinalSettlement } from '@lib/calculateBills';
+import formatDate from '@lib/formatDate';
 
 export default function EventDetails() {
   const { deleteMember, currentEvent } = useEvent();
   const [selectedMember, setSelectedMember] = useState<Person>();
-
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   const {
     isOpen: isItemModalOpen,
@@ -75,95 +69,6 @@ export default function EventDetails() {
     onOpen: onDeleteMemberDialogOpen,
     onClose: onDeleteMemberDialogClose,
   } = useDisclosure();
-
-  function calculateItemSplit(item: Item): {
-    owes: Map<string, number>;
-    gets: Map<string, number>;
-  } {
-    const owes = new Map<string, number>();
-    const gets = new Map<string, number>();
-
-    // Calculate total item cost
-    const totalItemCost = item.paidBy.reduce((sum, payer) => sum + payer.amount, 0);
-
-    item.splitBetween.forEach((member) => {
-      let amount = 0;
-
-      switch (member.splitMethod.type) {
-        case 'equal':
-          amount = totalItemCost / item.splitBetween.length;
-          break;
-        case 'fixed':
-          amount = member.splitMethod.amount;
-          break;
-        case 'percentage':
-          amount = totalItemCost * (member.splitMethod.percentage / 100);
-          break;
-      }
-
-      owes.set(member.name, (owes.get(member.name) || 0) + amount);
-    });
-
-    // Add amounts to payers
-    item.paidBy.forEach((payer) => {
-      gets.set(payer.name, (gets.get(payer.name) || 0) + payer.amount);
-    });
-
-    return { owes, gets };
-  }
-
-  function calculateFinalSettlement(items: Item[]): Array<{
-    from: string;
-    to: string;
-    amount: number;
-  }> {
-    const totalOwes = new Map<string, number>();
-    const totalGets = new Map<string, number>();
-
-    // Calculate total amounts for all items
-    items.forEach((item) => {
-      const itemSplit = calculateItemSplit(item);
-
-      itemSplit.owes.forEach((amount, person) => {
-        totalOwes.set(person, (totalOwes.get(person) || 0) + amount);
-      });
-
-      itemSplit.gets.forEach((amount, person) => {
-        totalGets.set(person, (totalGets.get(person) || 0) + amount);
-      });
-    });
-
-    // Calculate net amounts and create settlements
-    const settlements: Array<{ from: string; to: string; amount: number }> = [];
-    const netAmounts = new Map<string, number>();
-
-    // Calculate net amounts (positive means gets money, negative means owes money)
-    [...new Set([...totalOwes.keys(), ...totalGets.keys()])].forEach((person) => {
-      const owesAmount = totalOwes.get(person) || 0;
-      const getsAmount = totalGets.get(person) || 0;
-      netAmounts.set(person, getsAmount - owesAmount);
-    });
-
-    // Create settlements
-    while ([...netAmounts.values()].some((amount) => Math.abs(amount) > 0.01)) {
-      const debtor = [...netAmounts.entries()].find(([_, amount]) => amount < -0.01);
-      const creditor = [...netAmounts.entries()].find(([_, amount]) => amount > 0.01);
-
-      if (debtor && creditor) {
-        const amount = Math.min(Math.abs(debtor[1]), creditor[1]);
-        settlements.push({
-          from: debtor[0],
-          to: creditor[0],
-          amount: Number(amount.toFixed(2)),
-        });
-
-        netAmounts.set(debtor[0], debtor[1] + amount);
-        netAmounts.set(creditor[0], creditor[1] - amount);
-      }
-    }
-
-    return settlements;
-  }
 
   const finalSettlements = calculateFinalSettlement(currentEvent.items);
 

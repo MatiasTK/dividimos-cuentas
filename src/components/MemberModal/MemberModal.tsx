@@ -47,7 +47,7 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
       email: memberToEdit?.email || '',
       CVU: memberToEdit?.cvu || '',
     });
-  }, [memberToEdit]);
+  }, [memberToEdit, reset]);
 
   const onSubmit = (values: z.infer<ReturnType<typeof createPersonSchema>>) => {
     const member: Person = {

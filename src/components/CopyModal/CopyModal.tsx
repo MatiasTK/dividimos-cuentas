@@ -10,6 +10,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import { useEvent } from '@hooks/useEvent';
+import formatDate from '@lib/formatDate';
 import { Person } from '@types';
 import { useRef, useState } from 'react';
 
@@ -27,14 +28,6 @@ export default function CopyModal({ isOpen, onClose, settlements }: CopyModalPro
   const { currentEvent } = useEvent();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isCopied, setIsCopied] = useState(false);
-
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   function parseMember(member: Person) {
     if (member.email && member.cvu) {
