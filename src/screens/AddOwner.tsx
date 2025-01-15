@@ -43,18 +43,19 @@ export default function AddOwner({ goNextScreen }: AddOwnerProps) {
     goNextScreen();
   }
 
-  const h2Color = useColorModeValue('gray.600', 'gray');
+  const h2Color = useColorModeValue('blackAlpha.600', 'gray');
 
   return (
     <>
       <Box mt={6} mb={4}>
         <Heading
           as={'h2'}
-          size={'md'}
+          fontSize={'lg'}
           color={h2Color}
           fontWeight={'semibold'}
           lineHeight={1.4}
           letterSpacing={'wide'}
+          fontFamily={'poppins'}
         >
           Ingresa tus datos antes de continuar
         </Heading>

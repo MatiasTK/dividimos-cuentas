@@ -11,13 +11,7 @@ import {
   Stack,
   useColorModeValue,
   Text,
-  AlertDialog,
   useDisclosure,
-  AlertDialogOverlay,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogContent,
 } from '@chakra-ui/react';
 import { useEvent } from '@hooks/useEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,7 +19,6 @@ import { EventoSchema } from '@schemas';
 import { Event } from '@/types';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { useRef } from 'react';
 import { LuCalendar } from 'react-icons/lu';
 import DeleteDialog from '@components/DeleteDialog';
 
@@ -62,7 +55,7 @@ export default function CreateEvent({ goNextScreen, selectCustomEvent }: CreateE
   const dividerColor = useColorModeValue('gray.400', 'whiteAlpha.300');
   const dividerTextColor = useColorModeValue('gray.500', 'gray');
   const dividerTextBgColor = useColorModeValue('gray.50', '#141414');
-  const pastEventDateColor = useColorModeValue('blackAlpha.600', 'whiteAlpha.700');
+  const pastEventDateColor = useColorModeValue('blue.500', 'white');
 
   const handleDeleteSavedEvents = () => {
     deleteSavedEvents();
@@ -74,14 +67,11 @@ export default function CreateEvent({ goNextScreen, selectCustomEvent }: CreateE
       <Box mt={6} mb={4}>
         <Heading
           as={'h2'}
-          size={'md'}
+          fontSize={'lg'}
           color={h2Color}
-          fontWeight={'semibold'}
           lineHeight={1.4}
           letterSpacing={'tight'}
-          css={{
-            textWrap: 'pretty',
-          }}
+          fontFamily={'poppins'}
         >
           Divide cuentas con amigos de forma sencilla
         </Heading>

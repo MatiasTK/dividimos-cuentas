@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   Circle,
   Flex,
+  Heading,
   IconButton,
   SimpleGrid,
   Stack,
@@ -94,9 +95,16 @@ export default function EventDetails() {
     <Box mt={5}>
       <Box>
         <Flex justifyContent={'space-between'} alignItems={'center'}>
-          <Text fontWeight={'bold'} fontSize={'lg'} letterSpacing={'wide'} textAlign={'center'}>
+          <Heading
+            as={'h2'}
+            fontWeight={'bold'}
+            size={'md'}
+            letterSpacing={'wide'}
+            textAlign={'center'}
+            fontFamily={'poppins'}
+          >
             {currentEvent.name}
-          </Text>
+          </Heading>
           <Flex alignItems={'center'} gap={2}>
             <LuCalendar size={16} />
             <Text fontSize={'sm'}>{formatDate(currentEvent.date)}</Text>
@@ -296,7 +304,6 @@ export default function EventDetails() {
                           fontSize={'sm'}
                           color={'white'}
                           mr={'auto'}
-                          fontWeight={'bold'}
                           bgColor={'blue.500'}
                           borderRadius={'full'}
                           px={2}
@@ -415,24 +422,33 @@ export default function EventDetails() {
                   <Flex
                     key={index}
                     alignItems={'center'}
-                    py={2}
+                    py={4}
                     px={4}
                     mr={2}
                     borderRadius="lg"
                     bg={cardBgColor}
                   >
-                    <Flex alignItems={'center'} gap={2}>
-                      <Avatar name={settlement.from} size={'xs'} /> {settlement.from} debe
-                      <Text
-                        fontSize={'lg'}
-                        color={'blue.500'}
-                        letterSpacing={'tighter'}
-                        fontWeight={'bold'}
-                      >
-                        ${settlement.amount}
-                      </Text>
-                      a
-                      <Avatar name={settlement.to} size={'xs'} /> {settlement.to}
+                    <Flex alignItems={'center'} flex="1">
+                      <Box mr={1} fontWeight={'bold'}>
+                        <Avatar name={settlement.from} size={'xs'} /> {settlement.from}
+                      </Box>
+                      <Flex>
+                        debe
+                        <Text
+                          letterSpacing={'tighter'}
+                          backgroundColor={'red.200'}
+                          borderRadius={'full'}
+                          px={2}
+                          mx={1}
+                          color={'white'}
+                        >
+                          ${settlement.amount}
+                        </Text>
+                        a
+                      </Flex>
+                      <Box ml={2} fontWeight={'bold'}>
+                        <Avatar name={settlement.to} size={'xs'} /> {settlement.to}
+                      </Box>
                     </Flex>
                   </Flex>
                 );

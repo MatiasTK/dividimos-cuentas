@@ -14,13 +14,16 @@ import {
   SimpleGrid,
   FormErrorMessage,
   useColorModeValue,
+  IconButton,
+  useToast,
+  Box,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import ItemModalStepper from './ItemModalStepper';
 import { useEvent } from '@hooks/useEvent';
-import { LuCircleHelp } from 'react-icons/lu';
+import { LuCircleHelp, LuDollarSign, LuEqual, LuPercent } from 'react-icons/lu';
 import { SplitMember } from '@/types/splitMember';
 import { Item } from '@types';
 import RadioGroup from '@components/RadioGroup';
@@ -48,6 +51,7 @@ export default function ItemModal__Split({
   setSplitMembers,
   isEditing,
 }: ItemModal__SplitProps) {
+  const toast = useToast();
   const { currentEvent } = useEvent();
 
   const {
@@ -156,6 +160,51 @@ export default function ItemModal__Split({
     }
   };
 
+  const handleShowHelpToast = () => {
+    toast({
+      title: 'Dividir entre',
+      status: 'info',
+      render: () => (
+        <Stack color={'white'} fontSize={'sm'} gap={2}>
+          <Flex
+            alignItems={'center'}
+            gap={2}
+            borderRadius={'lg'}
+            mb={1}
+            py={2}
+            px={4}
+            bgColor={'blue.500'}
+          >
+            <LuEqual size={20} /> <Text>Divide el monto de manera equitativa</Text>
+          </Flex>
+          <Flex
+            alignItems={'center'}
+            gap={2}
+            borderRadius={'lg'}
+            mb={1}
+            py={2}
+            px={4}
+            bgColor={'blue.500'}
+          >
+            <LuPercent size={20} />
+            <Text>Divide el monto en un porcentaje del total</Text>
+          </Flex>
+          <Flex
+            alignItems={'center'}
+            gap={2}
+            borderRadius={'lg'}
+            py={2}
+            px={4}
+            bgColor={'blue.500'}
+          >
+            <LuDollarSign size={20} />
+            <Text>Divide el monto en una cantidad fija</Text>
+          </Flex>
+        </Stack>
+      ),
+    });
+  };
+
   const cardBgColor = useColorModeValue('gray.100', 'whiteAlpha.200');
   const footerBackBtnColor = useColorModeValue('blackAlpha.700', 'whiteAlpha.700');
 
@@ -168,14 +217,20 @@ export default function ItemModal__Split({
           <ItemModalStepper activeStep={2} />
           <Flex alignItems={'center'} gap={2}>
             <Text>Dividido entre</Text>
-            <LuCircleHelp size={20} />
+            <IconButton
+              aria-label="help"
+              variant={'ghost'}
+              icon={<LuCircleHelp size={20} />}
+              onClick={handleShowHelpToast}
+            />
           </Flex>
-          <Stack mb={4} mt={4} spacing={4}>
+          <Stack my={4} spacing={4}>
             {currentEvent.members.map((member) => (
               <Flex
                 key={member.name}
                 backgroundColor={cardBgColor}
-                p={2}
+                px={4}
+                py={2}
                 justifyContent={'space-between'}
                 borderRadius={8}
                 alignItems={'center'}

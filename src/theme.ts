@@ -32,7 +32,7 @@ const theme = extendTheme({
   styles: {
     global: (props: { colorMode: string }) => ({
       'html, body': {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Inter Variable, sans-serif',
         bg: props.colorMode === 'light' ? 'gray.50' : '#141414',
       },
     }),

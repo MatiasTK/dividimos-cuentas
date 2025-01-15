@@ -1,6 +1,6 @@
 import { HStack, useRadioGroup } from '@chakra-ui/react';
 import RadioCard from './RadioCard';
-import { LuCircleDollarSign, LuEqual, LuPercent } from 'react-icons/lu';
+import { LuDollarSign, LuEqual, LuPercent } from 'react-icons/lu';
 import { SplitMember } from '@/types/splitMember';
 
 type RadioGroupProps = {
@@ -23,7 +23,7 @@ export default function RadioGroup({ value, onChange, name }: RadioGroupProps) {
         <LuEqual size={20} />
       </RadioCard>
       <RadioCard {...getRadioProps({ value: 'fixed' })} name={`${name}-fixed`}>
-        <LuCircleDollarSign size={20} />
+        <LuDollarSign size={20} />
       </RadioCard>
       <RadioCard {...getRadioProps({ value: 'percentage' })} name={`${name}-percentage`}>
         <LuPercent size={20} />

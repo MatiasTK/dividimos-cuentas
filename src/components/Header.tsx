@@ -29,7 +29,14 @@ export default function Header({ showBackButton = false, goBackScreen, goHome }:
           onClick={goBackScreen}
         />
       )}
-      <Heading as={'h1'} size={'lg'} onClick={goHome} cursor={'pointer'} letterSpacing={'wide'}>
+      <Heading
+        as={'h1'}
+        size={'lg'}
+        onClick={goHome}
+        cursor={'pointer'}
+        letterSpacing={'wide'}
+        fontFamily={'poppins'}
+      >
         Dividimos Cuentas
       </Heading>
 

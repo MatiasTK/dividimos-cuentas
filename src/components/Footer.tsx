@@ -1,5 +1,5 @@
 import { Link, Stack, useColorModeValue, Text } from '@chakra-ui/react';
-import { LuHeart } from 'react-icons/lu';
+import { LuExternalLink } from 'react-icons/lu';
 
 export default function Footer() {
   const textColor = useColorModeValue('gray.500', 'whiteAlpha.500');
@@ -16,17 +16,27 @@ export default function Footer() {
         color={textColor}
         gap={1}
       >
-        Hecha con <LuHeart color="red" size={16} /> por{' '}
+        Creada por
         <Link
           href="https://github.com/MatiasTK"
           isExternal
-          color={linkColor}
           fontWeight={'normal'}
           _hover={{
             color: linkHoverColor,
           }}
+          display={'flex'}
+          alignItems={'center'}
+          gap={1}
         >
-          MatiasTK
+          <Text
+            color={linkColor}
+            _hover={{
+              textDecoration: 'underline',
+            }}
+          >
+            MatiasTK
+          </Text>
+          <LuExternalLink size={12} />
         </Link>
       </Text>
     </Stack>
