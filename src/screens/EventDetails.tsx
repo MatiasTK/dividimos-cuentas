@@ -39,7 +39,7 @@ import { Item, Person } from '@types';
 import CopyModal from '@components/CopyModal/CopyModal';
 import { useState } from 'react';
 import DeleteDialog from '@components/DeleteDialog';
-import { calculateFinalSettlement } from '@lib/calculateBills';
+import { calculateFinalSettlement, calculateItemSplit } from '@lib/calculateBills';
 import formatDate from '@lib/formatDate';
 
 export default function EventDetails() {
@@ -311,24 +311,18 @@ export default function EventDetails() {
                         <Text as={'span'} mr={1} fontWeight={'bold'}>
                           Pagado por:
                         </Text>
-                        {item.paidBy.map((payer) => `${payer.name} ($${payer.amount})`).join(', ')}
+                        {item.paidBy
+                          .sort()
+                          .map((payer) => `${payer.name} ($${payer.amount})`)
+                          .join(', ')}
                       </Text>
                       <Text>
                         <Text as={'span'} mr={1} fontWeight={'bold'}>
                           Divido entre:
                         </Text>
-                        {item.splitBetween
-                          .map((member) => {
-                            const splitMethod = member.splitMethod;
-                            switch (splitMethod.type) {
-                              case 'equal':
-                                return `${member.name} (equitativo)`;
-                              case 'fixed':
-                                return `${member.name} ($${splitMethod.amount})`;
-                              case 'percentage':
-                                return `${member.name} (${splitMethod.percentage}%)`;
-                            }
-                          })
+                        {Array.from(calculateItemSplit(item).owes)
+                          .sort()
+                          .map(([k, v]) => `${k} ($${v})`)
                           .join(', ')}
                       </Text>
                       <ButtonGroup mt={2} w={'full'}>
@@ -479,6 +473,9 @@ export default function EventDetails() {
             h={'full'}
             gap={2}
             disabled
+            _hover={{
+              bgColor: cardHoverBgColor,
+            }}
           >
             <LuMail size={24} />
             <Text fontSize={'sm'} w={'100%'} whiteSpace={'pre-wrap'}>

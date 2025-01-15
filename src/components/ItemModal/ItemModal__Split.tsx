@@ -44,6 +44,7 @@ type ItemModal__SplitProps = {
 
 export default function ItemModal__Split({
   goBack,
+  itemInfo,
   setSplitMembers,
   isEditing,
 }: ItemModal__SplitProps) {
@@ -59,16 +60,28 @@ export default function ItemModal__Split({
   } = useForm({
     resolver: zodResolver(splitMemberSchema),
     defaultValues: {
-      members: currentEvent.members.reduce<z.infer<typeof splitMemberSchema>['members']>(
-        (acc, member) => {
-          acc[member.name] = {
-            isPartOfSplit: true,
-            splitMethod: { type: 'equal' },
-          };
-          return acc;
-        },
-        {}
-      ),
+      members:
+        itemInfo.splitBetween.length > 0
+          ? itemInfo.splitBetween.reduce<z.infer<typeof splitMemberSchema>['members']>(
+              (acc, member) => {
+                acc[member.name] = {
+                  isPartOfSplit: true,
+                  splitMethod: member.splitMethod,
+                };
+                return acc;
+              },
+              {}
+            )
+          : currentEvent.members.reduce<z.infer<typeof splitMemberSchema>['members']>(
+              (acc, member) => {
+                acc[member.name] = {
+                  isPartOfSplit: true,
+                  splitMethod: { type: 'equal' },
+                };
+                return acc;
+              },
+              {}
+            ),
     },
   });
 

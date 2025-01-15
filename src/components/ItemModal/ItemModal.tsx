@@ -117,7 +117,17 @@ export default function ItemModal({ isOpen, editingItem, onClose }: ItemModalPro
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size={'sm'}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        if (editingItem) {
+          setCurrentTab(ModalTabs.Description);
+        }
+        onClose();
+      }}
+      isCentered
+      size={'sm'}
+    >
       <ModalOverlay />
       {renderTab()}
     </Modal>

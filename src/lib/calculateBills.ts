@@ -1,4 +1,5 @@
 import { Item } from '@types';
+import { Percentage, SplitMember } from '@/types/splitMember';
 
 export function calculateItemSplit(item: Item): {
   owes: Map<string, number>;
@@ -9,23 +10,34 @@ export function calculateItemSplit(item: Item): {
 
   // Calculate total item cost
   const totalItemCost = item.paidBy.reduce((sum, payer) => sum + payer.amount, 0);
+  let equalAmount = totalItemCost;
 
+  const percentageMembers: SplitMember[] = [];
+  const equalMembers: SplitMember[] = [];
+
+  // First add fixed amounts to owes
   item.splitBetween.forEach((member) => {
-    let amount = 0;
-
-    switch (member.splitMethod.type) {
-      case 'equal':
-        amount = totalItemCost / item.splitBetween.length;
-        break;
-      case 'fixed':
-        amount = member.splitMethod.amount;
-        break;
-      case 'percentage':
-        amount = totalItemCost * (member.splitMethod.percentage / 100);
-        break;
+    if (member.splitMethod.type === 'fixed') {
+      owes.set(member.name, member.splitMethod.amount);
+      equalAmount -= member.splitMethod.amount;
+    } else if (member.splitMethod.type === 'percentage') {
+      percentageMembers.push(member);
+    } else {
+      equalMembers.push(member);
     }
+  });
 
-    owes.set(member.name, (owes.get(member.name) || 0) + amount);
+  // Add percentage amounts to owes
+  percentageMembers.forEach((member) => {
+    const amount = (totalItemCost * (member.splitMethod as Percentage).percentage) / 100;
+    owes.set(member.name, amount);
+    equalAmount -= amount;
+  });
+
+  // Add equal amounts to owes
+  equalMembers.forEach((member) => {
+    const amount = equalAmount / equalMembers.length;
+    owes.set(member.name, amount);
   });
 
   // Add amounts to payers

@@ -1,15 +1,15 @@
 import { Person } from './person';
 
-type Equal = {
+export type Equal = {
   type: 'equal';
 };
 
-type Fixed = {
+export type Fixed = {
   type: 'fixed';
   amount: number;
 };
 
-type Percentage = {
+export type Percentage = {
   type: 'percentage';
   percentage: number;
 };

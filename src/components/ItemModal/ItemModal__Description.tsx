@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import ItemModalStepper from '@components/ItemModal/ItemModalStepper';
 import { itemSchema } from '@schemas';
+import { useEffect } from 'react';
 
 type ItemModal__DescriptionProps = {
   onTabDone: (description: string) => void;
@@ -33,10 +34,16 @@ export default function ItemModal__Description({
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof itemSchema>>({
     resolver: zodResolver(itemSchema),
+    defaultValues: { description: isEditing ? itemInfo.description : '' },
   });
+
+  useEffect(() => {
+    reset({ description: itemInfo.description });
+  }, [itemInfo.description, reset]);
 
   function onSubmit(values: z.infer<typeof itemSchema>) {
     onTabDone(values.description);
@@ -57,7 +64,6 @@ export default function ItemModal__Description({
                 {...register('description')}
                 id={'descripcion'}
                 placeholder="Pizza"
-                defaultValue={itemInfo.description !== '' ? itemInfo.description : undefined}
               />
               <FormErrorMessage>
                 {errors.description && (errors.description.message as string)}
