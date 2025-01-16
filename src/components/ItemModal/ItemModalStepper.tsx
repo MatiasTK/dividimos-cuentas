@@ -8,8 +8,8 @@ import {
   StepSeparator,
   StepStatus,
   StepTitle,
-  useColorModeValue,
 } from '@chakra-ui/react';
+import useCustomColor from '@hooks/useCustomColor';
 
 const steps = [
   {
@@ -28,7 +28,7 @@ type ItemModalStepperProps = {
 };
 
 export default function ItemModalStepper({ activeStep }: ItemModalStepperProps) {
-  const completedIconColor = useColorModeValue('white', 'black');
+  const { completedIconColor } = useCustomColor();
 
   return (
     <Box mb={6}>

@@ -1,5 +1,6 @@
-import { Heading, IconButton, Stack, useColorModeValue } from '@chakra-ui/react';
 import ColorModeToggle from '@/ColorModeToggle';
+import { Heading, IconButton, Stack } from '@chakra-ui/react';
+import useCustomColor from '@hooks/useCustomColor';
 import { LuArrowLeft } from 'react-icons/lu';
 
 type HeaderProps = {
@@ -9,7 +10,7 @@ type HeaderProps = {
 };
 
 export default function Header({ showBackButton = false, goBackScreen, goHome }: HeaderProps) {
-  const borderColor = useColorModeValue('blackAlpha.300', 'whiteAlpha.300');
+  const { borderColor } = useCustomColor();
 
   return (
     <Stack

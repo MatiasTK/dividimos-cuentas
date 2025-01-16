@@ -1,6 +1,15 @@
+import { Item, Payer } from '@/types';
 import {
   Box,
   Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -11,26 +20,17 @@ import {
   ModalFooter,
   ModalHeader,
   Stack,
-  Flex,
-  IconButton,
-  FormLabel,
-  Input,
   Text,
-  FormControl,
-  InputGroup,
-  FormErrorMessage,
-  useColorModeValue,
-  InputLeftElement,
 } from '@chakra-ui/react';
-import { useEvent } from '@hooks/useEvent';
+import ItemModalStepper from '@components/ItemModal/ItemModalStepper';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Item, Payer } from '@/types';
+import useCustomColor from '@hooks/useCustomColor';
+import { useEvent } from '@hooks/useEvent';
+import { payersSchema } from '@schemas';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuChevronDown, LuDollarSign, LuTrash } from 'react-icons/lu';
 import * as z from 'zod';
-import ItemModalStepper from '@components/ItemModal/ItemModalStepper';
-import { payersSchema } from '@schemas';
 
 type ItemModal__DescriptionProps = {
   goBack: () => void;
@@ -89,9 +89,7 @@ export default function ItemModal__Payers({
     setPayers(newPayers);
   };
 
-  const menuItemColor = useColorModeValue('gray.500', 'whiteAlpha.500');
-  const cardBgColor = useColorModeValue('gray.100', 'whiteAlpha.200');
-  const footerBackBtnColor = useColorModeValue('blackAlpha.700', 'whiteAlpha.700');
+  const { menuItemColor, cardBgColor, footerBackBtnColor } = useCustomColor();
 
   return (
     <ModalContent>

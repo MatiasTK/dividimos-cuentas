@@ -1,10 +1,9 @@
-import { Link, Stack, useColorModeValue, Text } from '@chakra-ui/react';
+import { Link, Stack, Text } from '@chakra-ui/react';
+import useCustomColor from '@hooks/useCustomColor';
 import { LuExternalLink } from 'react-icons/lu';
 
 export default function Footer() {
-  const textColor = useColorModeValue('gray.500', 'whiteAlpha.500');
-  const linkColor = useColorModeValue('blue.500', 'white');
-  const linkHoverColor = useColorModeValue('blue.600', 'whiteAlpha.700');
+  const { textColor, linkColor, linkHoverColor } = useCustomColor();
 
   return (
     <Stack mt={10} mb={4}>
@@ -30,6 +29,7 @@ export default function Footer() {
         >
           <Text
             color={linkColor}
+            as={'span'}
             _hover={{
               textDecoration: 'underline',
             }}
