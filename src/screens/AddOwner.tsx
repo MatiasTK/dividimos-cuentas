@@ -99,7 +99,7 @@ export default function AddOwner({ goNextScreen }: AddOwnerProps) {
               />
               <FormErrorMessage>{errors.CVU && (errors.CVU.message as string)}</FormErrorMessage>
               <FormHelperText>
-                Se usará para indicar a los demas donde pagar su deuda
+                Se usará para indicar a los demás donde pagar su deuda
               </FormHelperText>
             </FormControl>
           </Stack>

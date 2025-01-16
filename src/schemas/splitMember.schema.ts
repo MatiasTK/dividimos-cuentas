@@ -8,7 +8,7 @@ const FixedSchema = z.object({
   type: z.literal('fixed'),
   amount: z
     .number({
-      message: 'La cantidad no puede estar vacia',
+      message: 'La cantidad no puede estar vacía',
     })
     .int()
     .min(1, {
@@ -20,7 +20,7 @@ const PercentageSchema = z.object({
   type: z.literal('percentage'),
   percentage: z
     .number({
-      message: 'El porcentaje no puede estar vacio',
+      message: 'El porcentaje no puede estar vació',
     })
     .min(1, {
       message: 'El porcentaje debe ser mayor a 0',

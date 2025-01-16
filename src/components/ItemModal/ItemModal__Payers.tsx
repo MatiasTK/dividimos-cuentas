@@ -207,7 +207,7 @@ export default function ItemModal__Payers({
         </ModalBody>
         <ModalFooter>
           <Button mr={3} variant="ghost" onClick={goBack} color={footerBackBtnColor}>
-            Atras
+            Atrás
           </Button>
           <Button isLoading={isSubmitting} colorScheme="blue" mr={3} type="submit">
             Siguiente

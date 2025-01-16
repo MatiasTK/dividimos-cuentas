@@ -269,7 +269,7 @@ export default function ItemModal__Split({
     }
   };
 
-  const renderInputerrors = (memberName: string) => {
+  const renderInputErrors = (memberName: string) => {
     const splitMethodError = errors.members?.[memberName] as SplitMethodError;
 
     if (splitMethodError) {
@@ -379,7 +379,7 @@ export default function ItemModal__Split({
                     ></Controller>
                     {renderSplitMethodInput(member.name)}
                   </SimpleGrid>
-                  {renderInputerrors(member.name)}
+                  {renderInputErrors(member.name)}
                 </FormControl>
               </Flex>
             ))}
@@ -390,7 +390,7 @@ export default function ItemModal__Split({
         </ModalBody>
         <ModalFooter>
           <Button mr={3} variant="ghost" onClick={goBack} color={footerBackBtnColor}>
-            Atras
+            Atrás
           </Button>
           <Button isLoading={isSubmitting} colorScheme="blue" mr={3} type="submit">
             {isEditing ? 'Modificar' : 'Agregar'}

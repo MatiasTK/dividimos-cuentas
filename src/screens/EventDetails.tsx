@@ -381,7 +381,8 @@ export default function EventDetails() {
             onConfirm={() => deleteItem(selectedItem!)}
           >
             <Text>
-              ¿Estás seguro de que deseas eliminar este item? Esta acción no se puede deshacer.
+              ¿Estás seguro de que deseas eliminar el ítem
+              <strong>{selectedItem?.description}</strong>? Esta acción no se puede deshacer.
             </Text>
           </DeleteDialog>
         </Stack>

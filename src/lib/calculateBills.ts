@@ -45,6 +45,15 @@ export function calculateItemSplit(item: Item): {
     gets.set(payer.name, (gets.get(payer.name) || 0) + payer.amount);
   });
 
+  // Make numbers fixed
+  [...owes.entries()].forEach(([person, amount]) => {
+    owes.set(person, Number(amount.toFixed(2)));
+  });
+
+  [...gets.entries()].forEach(([person, amount]) => {
+    gets.set(person, Number(amount.toFixed(2)));
+  });
+
   return { owes, gets };
 }
 
