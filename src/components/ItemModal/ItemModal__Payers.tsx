@@ -21,6 +21,7 @@ import {
   ModalHeader,
   Stack,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import ItemModalStepper from '@components/ItemModal/ItemModalStepper';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,6 +49,8 @@ export default function ItemModal__Payers({
   const { currentEvent } = useEvent();
   const [selectedMembers, setSelectedMembers] = useState(itemInfo.paidBy);
 
+  const toast = useToast();
+
   const {
     handleSubmit,
     register,
@@ -71,7 +74,7 @@ export default function ItemModal__Payers({
       'members',
       newMembers.map((m) => ({ amount: m.amount })),
       {
-        shouldValidate: true,
+        shouldValidate: false,
       }
     );
 
@@ -81,6 +84,15 @@ export default function ItemModal__Payers({
   const watchedMembers = watch('members', itemInfo.paidBy);
 
   const onSubmit = (values: z.infer<typeof payersSchema>) => {
+    if (selectedMembers.length === 0) {
+      toast({
+        title: 'Ocurrió un error',
+        description: 'Debes agregar al menos un miembro',
+        status: 'error',
+      });
+      return;
+    }
+
     const newPayers = selectedMembers.map((member, index) => ({
       ...member,
       amount: values.members[index].amount,
@@ -99,17 +111,22 @@ export default function ItemModal__Payers({
         <ModalBody>
           <ItemModalStepper activeStep={1} />
           <Stack spacing={4}>
-            <Flex alignItems={'center'} justifyContent={'space-between'}>
-              <Flex>
+            <Flex justifyContent={'space-between'} direction={'column'} alignItems={'baseline'}>
+              <Flex fontSize={18}>
                 ¿Quienes pagaron
-                <Text fontWeight={'bold'} decoration={'underline'} ms={1}>
+                <Text fontWeight={'bold'} decoration={'underline'} mx={1}>
                   primero
                 </Text>
                 ?
               </Flex>
               <Menu>
-                <MenuButton as={Button} rightIcon={<LuChevronDown />} size={'sm'}>
-                  Agregar
+                <MenuButton
+                  as={Button}
+                  rightIcon={<LuChevronDown size={18} />}
+                  mt={4}
+                  w={'fit-content'}
+                >
+                  Agregar un miembro
                 </MenuButton>
                 {selectedMembers.length === currentEvent.members.length ? (
                   <MenuList>

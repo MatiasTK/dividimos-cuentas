@@ -1,11 +1,11 @@
+import { Item, ModalTabs, Payer } from '@/types';
+import { SplitMember } from '@/types/splitMember';
 import { Modal, ModalOverlay } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import ItemModal__Description from '@components/ItemModal/ItemModal__Description';
 import ItemModal__Payers from '@components/ItemModal/ItemModal__Payers';
 import ItemModal__Split from '@components/ItemModal/ItemModal__Split';
-import { Item, ModalTabs, Payer } from '@/types';
-import { SplitMember } from '@/types/splitMember';
 import { useEvent } from '@hooks/useEvent';
+import { useEffect, useState } from 'react';
 
 type ItemModalProps = {
   isOpen: boolean;
@@ -126,7 +126,10 @@ export default function ItemModal({ isOpen, editingItem, onClose }: ItemModalPro
         onClose();
       }}
       isCentered
-      size={'sm'}
+      size={{
+        base: 'sm',
+        md: 'lg',
+      }}
     >
       <ModalOverlay />
       {renderTab()}

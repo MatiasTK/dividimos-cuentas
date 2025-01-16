@@ -14,6 +14,10 @@ export default function EventHeader() {
         <Heading
           as={'h2'}
           fontWeight={'bold'}
+          fontSize={{
+            base: 'lg',
+            md: 'xl',
+          }}
           size={'md'}
           letterSpacing={'wide'}
           textAlign={'center'}

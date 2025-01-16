@@ -1,5 +1,5 @@
-import { Item } from '@types';
 import { Percentage, SplitMember } from '@/types/splitMember';
+import { Item } from '@types';
 
 export function calculateItemSplit(item: Item): {
   owes: Map<string, number>;
@@ -96,14 +96,20 @@ export function calculateFinalSettlement(items: Item[]): Array<{
 
     if (debtor && creditor) {
       const amount = Math.min(Math.abs(debtor[1]), creditor[1]);
+      const roundedAmount = Number(amount.toFixed(2));
+
       settlements.push({
         from: debtor[0],
         to: creditor[0],
-        amount: Number(amount.toFixed(2)),
+        amount: roundedAmount,
       });
 
-      netAmounts.set(debtor[0], debtor[1] + amount);
-      netAmounts.set(creditor[0], creditor[1] - amount);
+      // Round the updated amounts to prevent floating point errors
+      netAmounts.set(debtor[0], Number((debtor[1] + roundedAmount).toFixed(2)));
+      netAmounts.set(creditor[0], Number((creditor[1] - roundedAmount).toFixed(2)));
+    } else {
+      // Break the loop if no valid debtor-creditor pair is found
+      break;
     }
   }
 

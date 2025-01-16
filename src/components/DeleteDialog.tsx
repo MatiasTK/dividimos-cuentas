@@ -32,7 +32,7 @@ export default function DeleteDialog({
       leastDestructiveRef={cancelRef}
       size={{
         base: 'sm',
-        md: 'md',
+        md: 'lg',
       }}
       onClose={onClose}
       isCentered

@@ -64,7 +64,13 @@ export default function MembersSection() {
           memberToEdit={selectedMember}
         />
       </Stack>
-      <Stack mt={5} mb={10}>
+      <Stack
+        mt={5}
+        mb={{
+          base: 10,
+          md: 5,
+        }}
+      >
         {currentEvent.members.length === 0 ? (
           <Text fontSize={'sm'} color={grayText}>
             No hay miembros aun, intenta agregando uno!
@@ -113,8 +119,11 @@ export default function MembersSection() {
                       _active={{
                         bgColor: '#2e548f',
                       }}
-                      size={'lg'}
-                      px={6}
+                      size={{
+                        base: 'lg',
+                        md: 'md',
+                      }}
+                      p={6}
                       borderLeftRadius={0}
                       borderRightRadius={member.name === currentEvent.owner.name ? 'lg' : 0}
                       variant={'ghost'}
@@ -134,8 +143,11 @@ export default function MembersSection() {
                         _active={{
                           bgColor: '#b12b1f',
                         }}
-                        px={6}
-                        size={'lg'}
+                        p={6}
+                        size={{
+                          base: 'lg',
+                          md: 'md',
+                        }}
                         borderLeftRadius={0}
                         variant={'ghost'}
                         onClick={() => {

@@ -68,7 +68,13 @@ export default function ItemsSection() {
           editingItem={selectedItem}
         />
       </Stack>
-      <Stack mt={5} mb={10}>
+      <Stack
+        mt={5}
+        mb={{
+          base: 10,
+          md: 5,
+        }}
+      >
         {currentEvent.items.length === 0 ? (
           <Text fontSize={'sm'} color={grayText}>
             ¡No hay items aun! Intenta agregando uno.

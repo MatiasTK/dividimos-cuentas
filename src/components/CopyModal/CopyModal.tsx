@@ -95,7 +95,7 @@ ${currentEvent.members.map((member) => parseMember(member)).join('\n')}
       isCentered
       size={{
         base: 'sm',
-        md: 'md',
+        md: 'lg',
       }}
     >
       <ModalOverlay />

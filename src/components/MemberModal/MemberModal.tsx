@@ -7,15 +7,15 @@ import {
   Input,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
   Stack,
-  ModalCloseButton,
 } from '@chakra-ui/react';
-import { useEvent } from '@hooks/useEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEvent } from '@hooks/useEvent';
 import { createPersonSchema } from '@schemas';
 import { Person } from '@types';
 import { useEffect } from 'react';
@@ -73,7 +73,7 @@ export default function MemberModal({ isOpen, onClose, memberToEdit }: MemberMod
       isCentered
       size={{
         base: 'sm',
-        md: 'md',
+        md: 'lg',
       }}
     >
       <ModalOverlay />
