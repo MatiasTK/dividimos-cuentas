@@ -16,7 +16,7 @@ export default function Footer() {
         color={textColor}
         gap={1}
       >
-        Creada por
+        Creado por
         <Link
           href="https://github.com/MatiasTK"
           isExternal

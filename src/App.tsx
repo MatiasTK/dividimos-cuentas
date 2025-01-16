@@ -45,7 +45,7 @@ function App() {
 
   return (
     <Container>
-      <Flex direction="column" minHeight="100dvh">
+      <Flex direction="column" minHeight="105dvh">
         <Header
           showBackButton={currentScreen !== Screen.CREATE_EVENT}
           goBackScreen={() => setCurrentScreen(Screen.CREATE_EVENT)}

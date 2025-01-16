@@ -5,7 +5,7 @@ export const createPersonSchema = (existingMembers: Person[]) =>
   z.object({
     nombre: z
       .string()
-      .min(3, { message: 'El nombre debe tener al menos 3 caracteres' })
+      .min(1, { message: 'El nombre es requerido' })
       .refine(
         (currentName) =>
           !existingMembers.some(
@@ -17,7 +17,7 @@ export const createPersonSchema = (existingMembers: Person[]) =>
       ),
     email: z
       .string()
-      .email({ message: 'El mail indicado no parece tener un formato válido' })
+      .email({ message: 'El mail indicado no tiene un formato válido' })
       .or(z.literal(''))
       .optional(),
     CVU: z
